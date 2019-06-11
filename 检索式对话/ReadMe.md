@@ -45,4 +45,4 @@ MRFN将Muti-View中多粒度的思想发挥淋漓尽致，对utterance和respons
 
 ![An overview of our proposed IMN model ](https://github.com/iezhuozhuo/PaperReading/blob/master/%E6%A3%80%E7%B4%A2%E5%BC%8F%E5%AF%B9%E8%AF%9D/pic/IMN.png)
 
-IMN 实践出真知，很多有用组件的配合使用，无所不用，无所不极。其中 IMN 有四个可以借鉴的点子：(1) 解决OOV问题的三种词嵌入 --- pre-train、char-embedding、train set embedding；(2) 多层表征的贡献量化--可参考原文table 5；(3) 第一个考虑上下文未必全部有用，即对话中有些utterance可能是噪声的paper；(4) 明确的采用双向注意力。**文章的行文、用词真的好，值得一读一学**。具体细节可参考：
+IMN 实践出真知，很多有用组件的配合使用，无所不用，无所不极。其中 IMN 有四个可以借鉴的点子：(1) 解决OOV问题的三种词嵌入 --- pre-train、char-embedding、train set embedding；(2) 多层表征的贡献量化--可参考原文table 5；(3) 第一个考虑上下文未必全部有用，即对话中有些utterance可能是噪声的paper；(4) 明确的采用双向注意力。**文章的行文、用词真的好，值得一读一学**。具体细节可参考：[IMN：Interactive Matching Network](https://zhuanlan.zhihu.com/p/68590678)
