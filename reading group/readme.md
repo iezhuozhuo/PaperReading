@@ -67,11 +67,11 @@ Multi-lingual contextualized embeddings.
 
 构建Multi-Lingual Code-Switching Data Augmentation用来fine tune mbert，然后再zero-shot test下游任务。Multi-Lingual Code-Switching Data Augmentation的方法是
 
-![](.\pic\code-switch.png)
+![](./pic/code-switch.png)
 
 先随机选句子，然后在选择的句子中随机选词，最后根据bilingual-dictionary替换为其他语言。训练为：
 
-![](.\pic\code-switch-1.png)
+![](./pic/code-switch-1.png)
 
 
 
