@@ -41,7 +41,7 @@
 
 改进bert等预训练的MLM任务，通用的text encoder。
 
-#### 问题
+#### 挑战
 
 由于学习双向表示法，这些掩码语言建模(MLM)方法比传统的语言模型预训练更有效，但由于每个example，model只学习15%的标记，因此会**产生大量的计算成本**。另外因为pretrain阶段使用了人工[MASK]，导致了pretrain和下游的**mismatch**。
 
@@ -55,15 +55,15 @@ Model包含generator以及discriminator，generator是一个小型的MLM model�
 
 ### [CoSDA-ML: Multi-Lingual Code-Switching Data Augmentation for Zero-Shot Cross-Lingual NLP](https://arxiv.org/abs/2006.06402)
 
-领域
+#### 领域
 
 Multi-lingual contextualized embeddings.
 
-问题
+#### 挑战
 
 **跨语言模型受到不同语言之间子词不一致的上下文化表示的限制**。以前的做法是在不同的语言中提取一组通用的子词作为训练上下文化嵌入的基础。主要是在训练中来自多种语言的原始句子被合并到一个训练集中，这样共享的子词嵌入和其他参数就可以跨不同的语言进行调优，代表模型就是mBERT。原文认为虽然上述方法通过共享子词和参数实现了zero-shot跨语言适应，但它有明显的局限性--**训练跨语言嵌入的上下文仍然是单语言**的，这可能导致**不同语言之间子词的上下文化表示不一致**。目前的一些改进有两种：(1)通过使用词对齐信息，从嵌入到目标对应物的源上下文化子词中学习映射函数；(2)另一种使用code mixing来构造由源和目标短语组成的训练句子，以便对mBERT进行微调。但是目前这两种方法一次只考虑一对源语言和目标语言，因此导致**每种目标语言都有单独的模型(不是大一统模型)**。
 
-模型
+#### 模型
 
 构建Multi-Lingual Code-Switching Data Augmentation用来fine tune mbert，然后再zero-shot test下游任务。Multi-Lingual Code-Switching Data Augmentation的方法是
 
@@ -73,11 +73,75 @@ Multi-lingual contextualized embeddings.
 
 ![](./pic/code-switch-1.png)
 
+## 7.19 Update
 
+### [BAM! Born-Again Multi-Task Networks for Natural LanguageUnderstanding](https://www.aclweb.org/anthology/P19-1595.pdf) 
 
+#### 领域
 
+Multi-task NLU
 
+#### 挑战
 
+多任务一般都不如单任务优秀。原文使用知识提取(knowledge distillation)，其中单任务模型教多任务模型。具体原文采用teacher annealing的新方法来加强这种训练，使多任务模型从蒸馏逐步过渡到监督学习，使**多任务模型优于单任务teacher**。
+
+直观上，蒸馏是有效的，因为教师的输出分布在整个class比一个单一的one-hot label提供更多的训练信号。原文提出 Teacher  annealing 好处是逐渐使学生从向教师学习过渡到向golden label学习。这种方法保证了学生在训练初期就得到丰富的训练信号，而不局限于仅仅模仿老师。
+
+#### 模型
+
+一系列任务，使用一个task作为teacher然后训练multi-task student:
+
+$$\mathcal{L}(\theta)=\sum_{\tau \in \mathcal{T}} \sum_{x_{\tau}^{i}, y_{\tau}^{i} \in \mathcal{D}_{\tau}} \ell\left(f_{\tau}\left(x_{\tau}^{i}, \theta_{\tau}\right), f_{\tau}\left(x_{\tau}^{i}, \theta\right)\right)$$ .
+
+Teacher  annealing：在训练中将教师预测与golden标签混合:$$\ell\left(\lambda y_{\tau}^{i}+(1-\lambda) f_{\tau}\left(x_{\tau}^{i}, \theta_{\tau}\right), f_{\tau}\left(x_{\tau}^{i}, \theta\right)\right)$$ ,其中$$\lambda$$是从0到1的增长
+
+使用了分层学习率，按概率采样喂入数据，
+
+#### 问题
+
+- the teacher and student have the same neural architecture and model size？
+
+  蒸馏的student不应该是更简单的model嘛。
+
+- Intuitively, knowledge distillation improves training because the full  distribution over labels provided by the teacher provides a richer training  signal than a one-hot label.
+
+  形式上是一个l2距离损失函数，为什么可以认为教师的输出分布在整个class比一个单一的one-hot label提供更多的训练信号？
+
+- Ground questions
+
+  - multi-task是怎么训练的？
+
+  - 数据是怎么喂入的？
+
+    sampling procedure：the probability of training on an example for a particular taskτis proportional
+
+  - 一个task teacher教multi-task的输入输出流是什么？这些task大类上都是相同的吗？
+
+### [Context-Aware Cross-Lingual Mapping](https://arxiv.org/pdf/1903.03243.pdf)
+
+#### 领域
+
+cross lingual word vector mapping
+
+#### 挑战
+
+提出了一种**替代词级映射的方法**，更好地反映了句子级跨语言的相似性。在平行语料库中，通过直接映射对齐句子的平均嵌入，将上下文合并到转换矩阵中，同时通过词语对齐的平行句实现深度上下文化词语嵌入的跨语言映射。结果表明，**使用合理大小的并行语料库，上下文感知映射明显优于上下文独立的跨语言单词映射，特别是在使用上下文化的单词嵌入时**。
+
+#### 模型
+
+- Orthogonal Bilingual Mapping
+
+  $$R=\underset{\hat{R}}{\arg \min }\|\hat{R} X-Y\| \quad \text { s. t. } \hat{R}^{T} \hat{R}=I$$ 
+
+-  Sentence-Level Mapping
+
+  一个句子比单独的单词的模糊感要小，因为单词是在一个特定的上下文中解释的，所以在句子层次上学习的map很可能对单个单词的不一致不敏感。使用Orthogonal Bilingual Mapping。
+
+#### 问题
+
+- 怎么训练？
+
+  
 
 
 
