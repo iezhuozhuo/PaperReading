@@ -99,23 +99,23 @@ Teacher  annealing：在训练中将教师预测与golden标签混合:$$\ell\lef
 
 #### 问题
 
-- the teacher and student have the same neural architecture and model size？
+- ~~the teacher and student have the same neural architecture and model size？~~
 
   蒸馏的student不应该是更简单的model嘛。
 
 - Intuitively, knowledge distillation improves training because the full  distribution over labels provided by the teacher provides a richer training  signal than a one-hot label.
 
-  形式上是一个l2距离损失函数，为什么可以认为教师的输出分布在整个class比一个单一的one-hot label提供更多的训练信号？
+  ~~形式上是一个l2距离损失函数，为什么可以认为教师的输出分布在整个class比一个单一的one-hot label提供更多的训练信号？~~
 
 - Ground questions
 
-  - multi-task是怎么训练的？
+  - ~~multi-task是怎么训练的？~~
 
-  - 数据是怎么喂入的？
+  - ~~数据是怎么喂入的？~~
 
-    sampling procedure：the probability of training on an example for a particular taskτis proportional
+    sampling procedure: the probability of training on an example for a particular taskτis proportional.
 
-  - 一个task teacher教multi-task的输入输出流是什么？这些task大类上都是相同的吗？
+  - ~~一个task teacher教multi-task的输入输出流是什么？这些task大类上都是相同的吗？~~
 
 ### [Context-Aware Cross-Lingual Mapping](https://arxiv.org/pdf/1903.03243.pdf)
 
@@ -139,13 +139,75 @@ cross lingual word vector mapping
 
 #### 问题
 
-- 怎么训练？
+- ~~怎么训练？~~
 
-  
+## 7.26 Update
 
+### [SG-Net: Syntax-Guided Machine Reading Comprehension](https://www.aaai.org/Papers/AAAI/2020GB/AAAI-ZhangZ.2069.pdf)
 
+#### 领域
 
+对BLEU的讨论以及评测。
 
+#### 挑战
+
+对BLEU的主要批评之一是它在句子层面上与人类判断的关联性较差。因为它计算的是n-gram精度的几何平均值，当
+
+#### 模型
+
+#### 问题
+
+## 8.2 Update
+
+### [A systematic comparison of smoothing techniques for sentence-level bleu](http://acl2014.org/acl2014/W14-33/pdf/W14-3346.pdf)
+
+#### 领域
+
+对BLEU的讨论以及评测。
+
+#### 挑战
+
+对 BLEU 的主要批评之一是它在句子层面上与人类判断的关联性较差。因为它计算的是 n-gram 精度的几何平均值，如果当 n=4 时 4-gram=0 ，那么 bleu=0 ，而不管无论有多少 1-grams or 2-grams 匹配。目前的解决方法是使用 smoothing techniques。BLEU原始用于文档级别，当至少有一个句子有4-gram的时候不需要smooth。
+
+#### 模型
+
+系统比较了七种 smoothing techniques，其中三个是自己提出的。
+
+##### 正常的BLEU：
+
+T是translation，R是reference,BP是惩罚项(如果len(T)比len(R)短，则惩罚分数)
+
+$$\operatorname{BLEU}(N, T, R)=P(N, T, R) \times \operatorname{BP}(T, R)$$ 
+
+$$P(N, T, R)=\left(\prod_{n=1}^{N} p_{n}\right)^{\frac{1}{N}}$$ 
+
+$$p_{n}=\frac{m_{n}}{l_{n}}$$ 
+
+$$\mathrm{BP}(T, R)=\min \left(1.0, \operatorname{cxp}\left(1-\frac{\operatorname{lcn}(R)}{\operatorname{lcn}(T)}\right)\right)$$ 
+
+m是T和R相重合的n-gram，而l是T中总的n-gram。
+
+##### 7中BLEU：
+
+![](./pic/8-2-1.png)
+
+smooth 4解决了一个问题，即较短的翻译可能会由于有较小的命名器而导致精度值降低,对于较短的sentences，它给invcnt赋更大的值，从而导致更小的平滑计数。
+
+![](./pic/8-2-2.png)
+
+smooth 5是相似的n有相似match_count。
+
+![](./pic/8-2-3.png)
+
+6是该精度的最大似然估计与先验估计相结合。先验是通过假设pn1和pn 1之间的比率与pn 1和pn 2之间的比率相同来估计的
+
+7是4和5的结合，为零用4其他用5.
+
+##### 评测
+
+Kendall的秩相关系数：$$\tau=\frac{\# \text { concordant-pairs }-\# \text { discordant-pairs }}{\# \text { concordant-pairs }+\# \text { discordant-pairs }}$$   衡量和人评测的相关程度。
+
+#### 问题
 
 
 
